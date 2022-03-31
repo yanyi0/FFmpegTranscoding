@@ -3,6 +3,10 @@ plugins {
 }
 
 android {
+    // 复制以下三行
+    dataBinding{
+        enabled = true
+    }
     compileSdk 32
 
     defaultConfig {
