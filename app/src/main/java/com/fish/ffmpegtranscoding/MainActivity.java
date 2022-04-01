@@ -348,21 +348,39 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
 
     @Override
     public void end(int ticketID, int errorCode) {
-        TextView tvCurrTask = findViewById(R.id.tv_curr_task);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tvCurrTask = findViewById(R.id.tv_curr_task);
+            }
+        });
+
         if(errorCode == 0){
             Log.i("------------------ffmpeg task end--------",Integer.toString(errorCode));
             if(ticketID == mTaskTicket.getConfigTickets().size()){
                 Log.i("------------------all ffmpeg task complete--------",Integer.toString(errorCode));
-                tvCurrTask.setText("所有任务已完成，录制的视频在SD卡的Download目录下");
-                ProgressBar progressBar = findViewById(R.id.progressBar);
-                progressBar.setVisibility(View.GONE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView tvCurrTask = findViewById(R.id.tv_curr_task);
+                        tvCurrTask.setText("所有任务已完成，录制的视频在SD卡的Download目录下");
+                        ProgressBar progressBar = findViewById(R.id.progressBar);
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
             }else{
                 Log.i("------------------ffmpeg task next--------",Integer.toString(ticketID));
                 ffmpeg_execte_task(mTaskTicket.getConfigTickets().get(ticketID));
 //                ZegoUtils.getInstance().startTranscoding(mTaskTicket.getConfigTickets().get(ticketID));
             }
         }else{
-            tvCurrTask.setText("执行任务失败："+errorCode);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView tvCurrTask = findViewById(R.id.tv_curr_task);
+                    tvCurrTask.setText("执行任务失败："+errorCode);
+                }
+            });
         }
     }
     private void test_ffmpeg_commandline(){
