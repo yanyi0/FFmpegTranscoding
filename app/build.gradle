@@ -19,8 +19,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-//                arguments '-DANDROID_TOOLCHAIN=clang' --> gcc
                 cppFlags ''
+                abiFilters 'armeabi-v7a', "arm64-v8a"
                 version '3.6.0'
             }
             ndk {
@@ -42,8 +42,6 @@ android {
     externalNativeBuild {
         cmake {
             path file('src/main/cpp/CMakeLists.txt')
-            version '3.10.2'
-//            path "CMakeLists.txt"
         }
     }
 
@@ -54,11 +52,9 @@ android {
     buildFeatures {
         viewBinding true
     }
-//    ndkVersion '20.1.5948944'
 }
 
 dependencies {
-
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'

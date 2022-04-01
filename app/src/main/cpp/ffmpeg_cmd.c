@@ -64,8 +64,9 @@ void ffmpeg_progress(float progress) {
 }
 
 JNIEXPORT jint JNICALL
-Java_com_github_xch168_ffmpeg_1cmd_FFmpegCmd_exec(JNIEnv *env, jclass clazz, jint cmdnum, jobjectArray cmdline)
+Java_com_fish_ffmpegtranscoding_FFmpegCmd_exec(JNIEnv *env, jclass clazz, jint cmdnum, jobjectArray cmdline)
 {
+    LOGI("---------------Java_com_fish_ffmpegtranscoding_FFmpegCmd_exec---------------");
     (*env)->GetJavaVM(env, &jvm);
     m_clazz = (*env)->NewGlobalRef(env, clazz);
     //---------------------------------C语言 反射Java 相关----------------------------------------
@@ -86,6 +87,9 @@ Java_com_github_xch168_ffmpeg_1cmd_FFmpegCmd_exec(JNIEnv *env, jclass clazz, jin
     }
     //---------------------------------java 数组转C语言数组----------------------------------------
     //---------------------------------执行FFmpeg命令相关----------------------------------------
+    for(int i = 0;i< cmdnum;i++){
+        LOGI("-------Java_com_fish_ffmpegtranscoding_FFmpegCmd_exec argv--------%s",argv[i]);
+    }
     //新建线程 执行ffmpeg 命令
     ffmpeg_thread_run_cmd(cmdnum, argv);
     //注册ffmpeg命令执行完毕时的回调
@@ -96,7 +100,7 @@ Java_com_github_xch168_ffmpeg_1cmd_FFmpegCmd_exec(JNIEnv *env, jclass clazz, jin
 }
 
 JNIEXPORT void JNICALL
-Java_com_github_xch168_ffmpeg_1cmd_FFmpegCmd_exit(JNIEnv *env, jclass type)
+Java_com_fish_ffmpegtranscoding_FFmpegCmd_exit(JNIEnv *env, jclass type)
 {
 
 

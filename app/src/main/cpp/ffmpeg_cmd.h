@@ -8,9 +8,8 @@
 extern "C" {
 #endif
 
-JNIEXPORT jint JNICALL Java_Jni_FFmpegCmd_exec(JNIEnv *, jclass, jint, jobjectArray);
-
-JNIEXPORT void JNICALL Java_Jni_FFmpegCmd_exit(JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_com_fish_ffmpegtranscoding_FFmpegCmd_exec(JNIEnv *, jclass, jint, jobjectArray);
+JNIEXPORT void JNICALL Java_com_fish_ffmpegtranscoding_FFmpegCmd_exit(JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

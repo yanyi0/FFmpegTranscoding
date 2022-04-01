@@ -9,7 +9,11 @@ int num=0;
 
 void *thread(void *arg)
 {   //执行
+    for(int i = 0;i< num;i++){
+        LOGI("-------ffmpeg_thread_run_cmd *thread argv--------%s",argvs[i]);
+    }
     int result = ffmpeg_exec(num, argvs);
+    LOGI("--------ffmpeg_thread--ffmpeg_exec-%d-----",result);
     ffmpeg_thread_exit(result);
     return ((void *)0);
 }
@@ -19,7 +23,9 @@ void *thread(void *arg)
 int ffmpeg_thread_run_cmd(int cmdnum,char **argv){
     num=cmdnum;
     argvs=argv;
-
+    for(int i = 0;i< cmdnum;i++){
+        LOGI("-------ffmpeg_thread_run_cmd argv--------%s",argv[i]);
+    }
     int temp =pthread_create(&ntid,NULL,thread,NULL);
     if(temp!=0)
     {

@@ -12,19 +12,24 @@ project("ffmpegtranscoding")
 # 支持gnu++11
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
-# 添加头文件路径
-include_directories(
-        ./src/main/cpp
-        ./src/main/cpp/include
-)
 # 定义源码所在目录
-aux_source_directory(./src/main/cpp SRC)
+#aux_source_directory(./src/main/cpp SRC)
+#aux_source_directory(./src/main/cpp/ffmpeg SRC_FFMPEG)
+# 将 SRC_FFMPEG 添加到 SRC 中
+#list(APPEND SRC ${SRC_FFMPEG})
+
 # 1. 定义so库和头文件所在目录，方面后面使用 设置ffmpeg库所在路径的目录
 #CMAKE_SOURCE_DIR=/Users/zego/Documents/FFmpeg/AndroidExamples/FFmpegTranscoding/app/src/main/cpp/
 set(distribution_DIR ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI})
 set(ffmpeg_head_dir ${CMAKE_SOURCE_DIR})
 # 2. 添加头文件目录
 include_directories(${ffmpeg_head_dir}/include)
+# 添加头文件路径
+include_directories(
+        ./
+        ./ffmpeg
+        ./include
+)
 
 # 添加libffmpeg.so库
 add_library( ffmpeg
@@ -44,9 +49,17 @@ add_library( # Sets the name of the library.
 
         # Sets the library as a shared library.
         SHARED
-
         # Provides a relative path to your source file(s).
-        native-lib.cpp)
+        native-lib.cpp
+        ffmpeg_cmd.c
+        ffmpeg_thread.c
+        ./ffmpeg/cmdutils.c
+        ./ffmpeg/ffmpeg.c
+        ./ffmpeg/ffmpeg_cuvid.c
+        ./ffmpeg/ffmpeg_filter.c
+        ./ffmpeg/ffmpeg_hw.c
+        ./ffmpeg/ffmpeg_opt.c
+        )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by

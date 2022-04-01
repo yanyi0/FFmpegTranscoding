@@ -1,11 +1,14 @@
 package com.fish.ffmpegtranscoding;
 
 
+import android.util.Log;
+
 public class FFmpegCmd
 {
     static
     {
-        System.loadLibrary("ffmpeg-cmd");
+        System.loadLibrary("ffmpeg");
+        System.loadLibrary("ffmpegtranscoding");
     }
 
     private static OnCmdExecListener sOnCmdExecListener;
@@ -17,6 +20,7 @@ public class FFmpegCmd
 
     public static void exec(String[] cmds, long duration, OnCmdExecListener listener)
     {
+        Log.v("------------FFmpegCmd exec------------",cmds.toString());
         sOnCmdExecListener = listener;
         sDuration = duration;
 
@@ -25,6 +29,7 @@ public class FFmpegCmd
 
     public static void onExecuted(int ret)
     {
+        Log.v("------------FFmpegCmd onExecuted------------",Integer.toString(ret));
         if (sOnCmdExecListener != null)
         {
             if (ret == 0)
