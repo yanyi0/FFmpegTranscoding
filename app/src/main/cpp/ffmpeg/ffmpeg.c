@@ -4875,6 +4875,7 @@ int ffmpeg_exec(int argc, char **argv)
     init_dynload();
     av_log_set_level(AV_LOG_INFO);
     av_log_set_callback(log_callback_null);
+
     register_exit(ffmpeg_cleanup);
 
     setvbuf(stderr,NULL,_IONBF,0); /* win32 runtime needs this */
@@ -4892,6 +4893,31 @@ int ffmpeg_exec(int argc, char **argv)
 #if CONFIG_AVDEVICE
     avdevice_register_all();
 #endif
+    LOGI("--------------start print encoder ander decoder","");
+    char info[40000] = {0};
+    AVCodec *c_temp = av_codec_next(NULL);
+    while (c_temp != NULL) {
+        if (c_temp->decode != NULL) {
+            sprintf(info, "%sdecode:", info);
+        } else {
+            sprintf(info, "%sencode:", info);
+        }
+        switch (c_temp->type) {
+            case AVMEDIA_TYPE_VIDEO:
+                sprintf(info, "%s(video):", info);
+                break;
+            case AVMEDIA_TYPE_AUDIO:
+                sprintf(info, "%s(audio):", info);
+                break;
+            default:
+                sprintf(info, "%s(other):", info);
+                break;
+        }
+        sprintf(info, "%s[%s]\n", info, c_temp->name);
+        c_temp = c_temp->next;
+    }
+    LOGI("--------------finish print encoder ander decoder","");
+
     avformat_network_init();
 
     show_banner(argc, argv, options);

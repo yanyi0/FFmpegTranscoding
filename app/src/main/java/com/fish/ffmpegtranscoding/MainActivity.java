@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
     private TaskTicket mTaskTicket;
     // 设备根目录路径
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private RecordProgressCallback mProgressCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         registerView();
         registerEvent();
         mTaskTicket = new TaskTicket();
+        mProgressCallback = this;
     }
 
     private void registerView() {
@@ -127,8 +129,8 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
             return ;
         }
         Log.v("------------call ffmpeg----------",mTaskTicket.getVideoSourcePath());
-//        mTaskTicket.buildConfigTaskTickets();
-//        showTaskListDialog(mTaskTicket.getConfigTickets());
+        mTaskTicket.buildConfigTaskTickets();
+        showTaskListDialog(mTaskTicket.getConfigTickets());
     }
 
     private void showTaskListDialog(ArrayList<ConfigTicket> tickets){
@@ -139,8 +141,10 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         AlertDialog alert = builder.setTitle(title)
                 .setItems(showTasks,null)
                 .setPositiveButton("开始", (dialog, which) -> {
-                    // 开始第一个任务
+                    Log.i("MainActivity","------------showTaskListDialog---------: "+tickets.get(0).getTicketID());
+                    // 开始第一个任务 传ConfigTicket对象
 //                    ZegoUtils.getInstance().startTranscoding(tickets.get(0));
+                    ffmpeg_execte_task(tickets.get(0));
                 })
                 .setNegativeButton("取消", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
@@ -149,77 +153,22 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
                 .create();
         alert.show();
     }
-
     public void clickVideoBitrateAdd(View view){
-        long duration = 10;
-        //call ffmpeg comandline
-        //ffmpeg -i MyHeartWillGoOn.mp4 -c:a aac -c:v libx264 output.mp4
-        Log.v("------------select source file-----------",mTaskTicket.getVideoSourcePath());
-        CmdList cmd = new CmdList();
-//                        cmd.append("ffmpeg");
-//                        cmd.append("-i");
-//                        cmd.append(mTaskTicket.getVideoSourcePath());
-//                        cmd.append("-c:a");
-//                        cmd.append("aac");
-//                        cmd.append("-c:v");
-//                        cmd.append("libx264");
-//                        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/output000.mp4");
-//                        cmd.append("-y");
-        //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
-//        cmd.append("ffmpeg");
-//        cmd.append("-i");
-//        cmd.append(mTaskTicket.getVideoSourcePath());
-//        cmd.append("-vframes");
-//        cmd.append("100");
-//        cmd.append("-y");
-//        cmd.append("-f");
-//        cmd.append("gif");
-//        cmd.append("-s");
-//        cmd.append("480x320");
-//        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.gif");
-        //ffmpeg -i .mp4 .mkv
-        cmd.append("ffmpeg");
-        cmd.append("-i");
-        cmd.append(mTaskTicket.getVideoSourcePath());
-        Log.v("--------------root path ---------------",path);
-        String toFile = String.format("%s/output.mp4",path);
-//        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.mkv");
-        cmd.append(toFile);
-        cmd.append("-y");
-        Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
-        FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
-            @Override
-            public void onProcessStart() {
-                Log.v("----------onProcessStart----------","onProcessStart");
-            }
+        //-------todo delete use test
+//        test_ffmpeg_commandline();
 
-            @Override
-            public void onProcessProgress(float progress) {
-                Log.v("----------onProcessProgress----------","onProcessProgress");
-            }
-
-            @Override
-            public void onProcessSuccess() {
-                Log.v("----------onProcessSuccess----------","onProcessSuccess");
-            }
-
-            @Override
-            public void onProcessFailure() {
-                Log.v("----------onProcessFailure----------","onProcessFailure");
-            }
-        });
-//        String bitrate = mEtVideoBitrate.getText().toString().trim();
-//        if(TextUtils.isEmpty(bitrate)){
-//            Toast.makeText(this, "请输入码率", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//        try {
-//            mTaskTicket.getBitrate().add(Integer.valueOf(bitrate));
-//        }catch (Exception e){
-//            Toast.makeText(this, "请输入正确的数字", Toast.LENGTH_SHORT).show();
-//        }
-//        mTvBitrate.setText(mTaskTicket.getBitrate().toString().replace("[","").replace("]",""));
-//        mEtVideoBitrate.setText("");
+        String bitrate = mEtVideoBitrate.getText().toString().trim();
+        if(TextUtils.isEmpty(bitrate)){
+            Toast.makeText(this, "请输入码率", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            mTaskTicket.getBitrate().add(Integer.valueOf(bitrate));
+        }catch (Exception e){
+            Toast.makeText(this, "请输入正确的数字", Toast.LENGTH_SHORT).show();
+        }
+        mTvBitrate.setText(mTaskTicket.getBitrate().toString().replace("[","").replace("]",""));
+        mEtVideoBitrate.setText("");
     }
 
     public void clickVideoBitrateDelete(View view){
@@ -328,23 +277,152 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setMax(totalDuration);
     }
+    private void ffmpeg_execte_task(ConfigTicket configTicket){
+        long duration = 10;
+        //call ffmpeg comandline
+        //ffmpeg -i MyHeartWillGoOn.mp4 -c:a aac -c:v libx264 output.mp4
+        Log.v("------------select source file-----------",configTicket.getVideoSourcePath());
+        CmdList cmd = new CmdList();
+        cmd.append("ffmpeg");
+        cmd.append("-i");
+        cmd.append(configTicket.getVideoSourcePath());
+        cmd.append("-c:a");
+        cmd.append("aac");
+        cmd.append("-c:v");
+        cmd.append("libx264");
+        //分辨率
+        String resolution = String.format("scale=%dx%d",configTicket.getWidth(),configTicket.getHeight());
+        cmd.append("-vf");
+        cmd.append(resolution);
+        //帧率
+        cmd.append("-r");
+        cmd.append(Integer.toString(configTicket.getFps()));
+        //gop
+        cmd.append("-g");
+        String gop = String.format("%d",configTicket.getGop() * configTicket.getFps());
+        cmd.append(gop);
+        String bitrate = String.format("%dk",configTicket.getBitrate());
+        //码率控制
+        if(configTicket.getBitrateControl().equals("ABR")){
+            cmd.append("-b:v");
+            cmd.append(bitrate);
+        }
+        //码率控制
+        if (configTicket.getBitrateControl().equals("CBR")) {
+            cmd.append("-b:v");
+            cmd.append(bitrate);
+            cmd.append("-maxrate");
+            cmd.append(bitrate);
+            cmd.append("-minrate");
+            cmd.append(bitrate);
+        }
+        cmd.append(configTicket.getVideoCachePath());
+        cmd.append("-y");
+        //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
+        Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
+        FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
+            @Override
+            public void onProcessStart() {
+                Log.v("----------onProcessStart----------","onProcessStart");
+            }
+
+            @Override
+            public void onProcessProgress(float progress) {
+                Log.v("----------onProcessProgress----------","onProcessProgress");
+            }
+
+            @Override
+            public void onProcessSuccess() {
+                Log.v("----------onProcessSuccess----------","onProcessSuccess");
+                if(mProgressCallback != null){
+                    mProgressCallback.end(configTicket.getTicketID(),0);
+                }
+            }
+
+            @Override
+            public void onProcessFailure() {
+                Log.v("----------onProcessFailure----------","onProcessFailure");
+            }
+        });
+    }
 
     @Override
     public void end(int ticketID, int errorCode) {
         TextView tvCurrTask = findViewById(R.id.tv_curr_task);
         if(errorCode == 0){
+            Log.i("------------------ffmpeg task end--------",Integer.toString(errorCode));
             if(ticketID == mTaskTicket.getConfigTickets().size()){
+                Log.i("------------------all ffmpeg task complete--------",Integer.toString(errorCode));
                 tvCurrTask.setText("所有任务已完成，录制的视频在SD卡的Download目录下");
                 ProgressBar progressBar = findViewById(R.id.progressBar);
                 progressBar.setVisibility(View.GONE);
             }else{
+                Log.i("------------------ffmpeg task next--------",Integer.toString(ticketID));
+                ffmpeg_execte_task(mTaskTicket.getConfigTickets().get(ticketID));
 //                ZegoUtils.getInstance().startTranscoding(mTaskTicket.getConfigTickets().get(ticketID));
             }
         }else{
             tvCurrTask.setText("执行任务失败："+errorCode);
         }
     }
+    private void test_ffmpeg_commandline(){
+        String toFile = String.format("%s/output_mediacodec.mp4",path);
+        Log.v("--------------root path ---------------",path);
+        long duration = 10;
+        //call ffmpeg comandline
+        //ffmpeg -i MyHeartWillGoOn.mp4 -c:a aac -c:v libx264 output.mp4
+        Log.v("------------select source file-----------",mTaskTicket.getVideoSourcePath());
+        CmdList cmd = new CmdList();
+        cmd.append("ffmpeg");
+        cmd.append("-i");
+        cmd.append(mTaskTicket.getVideoSourcePath());
+        cmd.append("-c:a");
+        cmd.append("aac");
+        cmd.append("-c:v");
+        cmd.append("h264_mediacodec");
+        cmd.append(toFile);
+        cmd.append("-y");
+        //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
+        cmd.append("ffmpeg");
+        cmd.append("-i");
+        cmd.append(mTaskTicket.getVideoSourcePath());
+        cmd.append("-vframes");
+        cmd.append("100");
+        cmd.append("-y");
+        cmd.append("-f");
+        cmd.append("gif");
+        cmd.append("-s");
+        cmd.append("480x320");
+        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.gif");
+        //ffmpeg -i .mp4 .mkv
+        cmd.append("ffmpeg");
+        cmd.append("-i");
+        cmd.append(mTaskTicket.getVideoSourcePath());
+        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.mkv");
+        cmd.append(toFile);
+        cmd.append("-y");
+        Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
+        FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
+            @Override
+            public void onProcessStart() {
+                Log.v("----------onProcessStart----------","onProcessStart");
+            }
 
+            @Override
+            public void onProcessProgress(float progress) {
+                Log.v("----------onProcessProgress----------","onProcessProgress");
+            }
+
+            @Override
+            public void onProcessSuccess() {
+                Log.v("----------onProcessSuccess----------","onProcessSuccess");
+            }
+            @Override
+            public void onProcessFailure() {
+                Log.v("----------onProcessFailure----------","onProcessFailure");
+            }
+        });
+    }
     @Override
     public void progress(int currDuration) {
         ProgressBar progressBar = findViewById(R.id.progressBar);
