@@ -40,7 +40,7 @@
 #include "libavutil/parseutils.h"
 #include "libavutil/pixdesc.h"
 #include "libavutil/pixfmt.h"
-
+#include "android_log.h"
 #define DEFAULT_PASS_LOGFILENAME_PREFIX "ffmpeg2pass"
 
 #define MATCH_PER_STREAM_OPT(name, type, outvar, fmtctx, st)\
@@ -3256,7 +3256,7 @@ static int open_files(OptionGroupList *l, const char *inout,
                       int (*open_file)(OptionsContext*, const char*))
 {
     int i, ret;
-
+    LOGI("--------------ffmpeg_opt.c open_files l->nb_groups-----------%d", l->nb_groups);
     for (i = 0; i < l->nb_groups; i++) {
         OptionGroup *g = &l->groups[i];
         OptionsContext o;
@@ -3265,6 +3265,7 @@ static int open_files(OptionGroupList *l, const char *inout,
         o.g = g;
 
         ret = parse_optgroup(&o, g);
+        LOGI("--------------ffmpeg_opt.c open_files parse_optgroup-----------%d",ret);
         if (ret < 0) {
             av_log(NULL, AV_LOG_ERROR, "Error parsing options for %s file "
                    "%s.\n", inout, g->arg);
@@ -3272,7 +3273,9 @@ static int open_files(OptionGroupList *l, const char *inout,
         }
 
         av_log(NULL, AV_LOG_DEBUG, "Opening an %s file: %s.\n", inout, g->arg);
+        LOGI("--------------ffmpeg_opt.c open_files parse_optgroup open_file-----------%s","start");
         ret = open_file(&o, g->arg);
+        LOGI("--------------ffmpeg_opt.c open_files parse_optgroup open_file-----------%d",ret);
         uninit_options(&o);
         if (ret < 0) {
             av_log(NULL, AV_LOG_ERROR, "Error opening %s file %s.\n",
@@ -3290,9 +3293,9 @@ int ffmpeg_parse_options(int argc, char **argv)
     OptionParseContext octx;
     uint8_t error[128];
     int ret;
-
+    LOGI("--------------ffmpeg_opt.c ffmpeg_parse_options-----------%s", "ffmpeg_parse_options()");
     memset(&octx, 0, sizeof(octx));
-
+    LOGI("--------------ffmpeg_opt.c ffmpeg_parse_options memset-----------%s", "memset()");
     /* split the commandline into an internal representation */
     ret = split_commandline(&octx, argc, argv, options, groups,
                             FF_ARRAY_ELEMS(groups));
@@ -3303,16 +3306,19 @@ int ffmpeg_parse_options(int argc, char **argv)
 
     /* apply global options */
     ret = parse_optgroup(NULL, &octx.global_opts);
+    LOGI("--------------ffmpeg_opt.c ffmpeg_parse_options parse_optgroup-----------%s", "parse_optgroup()");
     if (ret < 0) {
         av_log(NULL, AV_LOG_FATAL, "Error parsing global options: ");
         goto fail;
     }
 
     /* configure terminal and setup signal handlers */
+    LOGI("--------------ffmpeg_opt.c ffmpeg_parse_options term_init-----------%s", "term_init() start");
     term_init();
-
+    LOGI("--------------ffmpeg_opt.c ffmpeg_parse_options term_init-----------%s", "term_init() finish");
     /* open input files */
     ret = open_files(&octx.groups[GROUP_INFILE], "input", open_input_file);
+    LOGI("--------------ffmpeg_opt.c open_files-----------%s", "open_input_file()");
     if (ret < 0) {
         av_log(NULL, AV_LOG_FATAL, "Error opening input files: ");
         goto fail;

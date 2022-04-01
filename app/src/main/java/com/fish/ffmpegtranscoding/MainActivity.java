@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import android.util.Log;
+import android.os.Environment;
 
 import com.fish.ffmpegtranscoding.callback.RecordProgressCallback;
 import com.fish.ffmpegtranscoding.entry.ConfigTicket;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
     private EditText mEtVideoBitrate;
     private TaskTicket mTaskTicket;
     // 设备根目录路径
-//    private String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private String path = Environment.getExternalStorageDirectory().getAbsolutePath();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,19 +151,75 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
     }
 
     public void clickVideoBitrateAdd(View view){
-        String bitrate = mEtVideoBitrate.getText().toString().trim();
-        if(TextUtils.isEmpty(bitrate)){
-            Toast.makeText(this, "请输入码率", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        try {
-            mTaskTicket.getBitrate().add(Integer.valueOf(bitrate));
-        }catch (Exception e){
-            Toast.makeText(this, "请输入正确的数字", Toast.LENGTH_SHORT).show();
-        }
-        mTvBitrate.setText(mTaskTicket.getBitrate().toString().replace("[","").replace("]",""));
-        mEtVideoBitrate.setText("");
+        long duration = 10;
+        //call ffmpeg comandline
+        //ffmpeg -i MyHeartWillGoOn.mp4 -c:a aac -c:v libx264 output.mp4
+        Log.v("------------select source file-----------",mTaskTicket.getVideoSourcePath());
+        CmdList cmd = new CmdList();
+//                        cmd.append("ffmpeg");
+//                        cmd.append("-i");
+//                        cmd.append(mTaskTicket.getVideoSourcePath());
+//                        cmd.append("-c:a");
+//                        cmd.append("aac");
+//                        cmd.append("-c:v");
+//                        cmd.append("libx264");
+//                        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/output000.mp4");
+//                        cmd.append("-y");
+        //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
+//        cmd.append("ffmpeg");
+//        cmd.append("-i");
+//        cmd.append(mTaskTicket.getVideoSourcePath());
+//        cmd.append("-vframes");
+//        cmd.append("100");
+//        cmd.append("-y");
+//        cmd.append("-f");
+//        cmd.append("gif");
+//        cmd.append("-s");
+//        cmd.append("480x320");
+//        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.gif");
+        //ffmpeg -i .mp4 .mkv
+        cmd.append("ffmpeg");
+        cmd.append("-i");
+        cmd.append(mTaskTicket.getVideoSourcePath());
+        Log.v("--------------root path ---------------",path);
+        String toFile = String.format("%s/output.mp4",path);
+//        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.mkv");
+        cmd.append(toFile);
+        cmd.append("-y");
+        Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
+        FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
+            @Override
+            public void onProcessStart() {
+                Log.v("----------onProcessStart----------","onProcessStart");
+            }
 
+            @Override
+            public void onProcessProgress(float progress) {
+                Log.v("----------onProcessProgress----------","onProcessProgress");
+            }
+
+            @Override
+            public void onProcessSuccess() {
+                Log.v("----------onProcessSuccess----------","onProcessSuccess");
+            }
+
+            @Override
+            public void onProcessFailure() {
+                Log.v("----------onProcessFailure----------","onProcessFailure");
+            }
+        });
+//        String bitrate = mEtVideoBitrate.getText().toString().trim();
+//        if(TextUtils.isEmpty(bitrate)){
+//            Toast.makeText(this, "请输入码率", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//        try {
+//            mTaskTicket.getBitrate().add(Integer.valueOf(bitrate));
+//        }catch (Exception e){
+//            Toast.makeText(this, "请输入正确的数字", Toast.LENGTH_SHORT).show();
+//        }
+//        mTvBitrate.setText(mTaskTicket.getBitrate().toString().replace("[","").replace("]",""));
+//        mEtVideoBitrate.setText("");
     }
 
     public void clickVideoBitrateDelete(View view){
@@ -251,54 +308,7 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
                         tvVideoSrcPath.setText(mTaskTicket.getVideoSourcePath());
 
                         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                        long duration = 10;
-                        //call ffmpeg comandline
-                        //ffmpeg -i MyHeartWillGoOn.mp4 -c:a aac -c:v libx264 output.mp4
                         Log.v("------------select source file-----------",mTaskTicket.getVideoSourcePath());
-                        CmdList cmd = new CmdList();
-//                        cmd.append("ffmpeg");
-//                        cmd.append("-i");
-//                        cmd.append(mTaskTicket.getVideoSourcePath());
-//                        cmd.append("-c:a");
-//                        cmd.append("aac");
-//                        cmd.append("-c:v");
-//                        cmd.append("libx264");
-//                        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/output000.mp4");
-//                        cmd.append("-y");
-                        //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
-                        cmd.append("ffmpeg");
-                        cmd.append("-i");
-                        cmd.append(mTaskTicket.getVideoSourcePath());
-                        cmd.append("-vframes");
-                        cmd.append("100");
-                        cmd.append("-y");
-                        cmd.append("-f");
-                        cmd.append("gif");
-                        cmd.append("-s");
-                        cmd.append("480x320");
-                        cmd.append("/storage/emulated/0/Huawei/Hisuite/Hisuitegallery/video_100.gif");
-                        Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
-                        FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
-                                    @Override
-                                    public void onProcessStart() {
-                                        Log.v("----------onProcessStart----------","onProcessStart");
-                                    }
-
-                                    @Override
-                                    public void onProcessProgress(float progress) {
-                                        Log.v("----------onProcessProgress----------","onProcessProgress");
-                                    }
-
-                                    @Override
-                                    public void onProcessSuccess() {
-                                        Log.v("----------onProcessSuccess----------","onProcessSuccess");
-                                    }
-
-                                    @Override
-                                    public void onProcessFailure() {
-                                        Log.v("----------onProcessFailure----------","onProcessFailure");
-                                    }
-                        });
 //                        retriever.setDataSource(mTaskTicket.getVideoSourcePath());
 //                        mTaskTicket.setSourceDuration(Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)));
                     } else {

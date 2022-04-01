@@ -65,6 +65,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "android_log.h"
 
 static int init_report(const char *env);
 
@@ -137,11 +138,12 @@ void exit_program(int ret)
 {
     if (program_exit)
         program_exit(ret);
-
+    LOGI("-----------------exit_program--------------------%d",ret);
     // 退出线程(该函数后面定义)
     ffmpeg_thread_exit(ret);
     // 删掉下面这行代码，不然执行结束，应用会crash
-    //exit(ret);
+//    exit(ret);
+//    return ret;
 }
 
 double parse_number_or_die(const char *context, const char *numstr, int type,

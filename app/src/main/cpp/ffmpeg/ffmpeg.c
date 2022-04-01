@@ -633,15 +633,10 @@ static void ffmpeg_cleanup(int ret)
     term_exit();
     ffmpeg_exited = 1;
 
-    filtergraphs = NULL;
     nb_filtergraphs = 0;
-    output_files = NULL;
     nb_output_files = 0;
-    output_streams = NULL;
     nb_output_streams = 0;
-    input_files = NULL;
     nb_input_files = 0;
-    input_streams = NULL;
     nb_input_streams = 0;
 }
 
@@ -1777,6 +1772,17 @@ static void print_report(int is_last_report, int64_t timer_start, int64_t cur_ti
     mins %= 60;
     hours_sign = (pts < 0) ? "-" : "";
 
+//    // 定义已处理的时长
+//    float mss;
+//
+//    secs = FFABS(pts) / AV_TIME_BASE;
+//    us = FFABS(pts) % AV_TIME_BASE;
+//    // 获取已处理的时长
+//    mss = secs + ((float) us / AV_TIME_BASE);
+//
+//    // 调用ffmpeg_progress将进度传到Java层，代码后面定义
+//    ffmpeg_progress(mss);
+
     bitrate = pts && total_size >= 0 ? total_size * 8 / (pts / 1000.0) : -1;
     speed = t != 0.0 ? (double)pts / AV_TIME_BASE / t : -1;
 
@@ -1850,17 +1856,6 @@ static void print_report(int is_last_report, int64_t timer_start, int64_t cur_ti
 
     if (is_last_report)
         print_final_stats(total_size);
-
-    // 定义已处理的时长
-    float mss;
-
-    secs = FFABS(pts) / AV_TIME_BASE;
-    us = FFABS(pts) % AV_TIME_BASE;
-    // 获取已处理的时长
-    mss = secs + ((float) us / AV_TIME_BASE);
-
-    // 调用ffmpeg_progress将进度传到Java层，代码后面定义
-    ffmpeg_progress(mss);
 }
 
 static void ifilter_parameters_from_codecpar(InputFilter *ifilter, AVCodecParameters *par)
@@ -4861,19 +4856,25 @@ static int64_t getmaxrss(void)
 
 static void log_callback_null(void *ptr, int level, const char *fmt, va_list vl)
 {
+    va_list vl2;
+    char *line = malloc(256 * sizeof(char));
+    static int print_prefix = 1;
+    va_copy(vl2, vl);
+    av_log_format_line(ptr, level, fmt, vl2, line, 256, &print_prefix);
+    va_end(vl2);
+    line[255] = '\0';
+    LOGI("%s", line);
+    free(line);
 }
 
 int ffmpeg_exec(int argc, char **argv)
 {
-    for(int i = 0;i< argc;i++){
-//        av_log(NULL, AV_LOG_ERROR, "-------ffmpeg_exec argv--------%s",argv[i]);
-        LOGI("----------------------ffmpeg_exec---------------%s",argv[i]);
-    }
     int i, ret;
     BenchmarkTimeStamps ti;
 
     init_dynload();
-
+    av_log_set_level(AV_LOG_INFO);
+    av_log_set_callback(log_callback_null);
     register_exit(ffmpeg_cleanup);
 
     setvbuf(stderr,NULL,_IONBF,0); /* win32 runtime needs this */
@@ -4887,7 +4888,7 @@ int ffmpeg_exec(int argc, char **argv)
         argc--;
         argv++;
     }
-
+    avdevice_register_all();
 #if CONFIG_AVDEVICE
     avdevice_register_all();
 #endif
@@ -4936,6 +4937,5 @@ int ffmpeg_exec(int argc, char **argv)
         exit_program(69);
 
     exit_program(received_nb_signals ? 255 : main_return_code);
-    ffmpeg_cleanup(0);
     return main_return_code;
 }

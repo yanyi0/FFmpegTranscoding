@@ -41,6 +41,7 @@ static void (*ffmpeg_callback)(int ret);
  * 注册线程回调
  */
 void ffmpeg_thread_callback(void (*cb)(int ret)){
+    LOGI("-------ffmpeg_thread.c ffmpeg_thread_callback--------");
     ffmpeg_callback = cb;
 }
 
@@ -48,10 +49,15 @@ void ffmpeg_thread_callback(void (*cb)(int ret)){
  * 退出线程
  */
 void ffmpeg_thread_exit(int ret){
+    LOGI("-------ffmpeg_thread.c ffmpeg_thread_exit--------%d",ret);
     if (ffmpeg_callback) {
+        LOGI("-------ffmpeg_thread.c ffmpeg_thread_exit ffmpeg_callback--------%d",ret);
         ffmpeg_callback(ret);
+
     }
+    LOGI("-------ffmpeg_thread.c ffmpeg_thread_exit ffmpeg_callback finish--------%d",ret);
     pthread_exit("ffmpeg_thread_exit");
+    LOGI("-------ffmpeg_thread.c ffmpeg_thread_exit pthread_exit finish--------%d",ret);
 }
 
 /**

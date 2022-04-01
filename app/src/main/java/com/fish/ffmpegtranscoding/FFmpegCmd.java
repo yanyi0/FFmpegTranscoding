@@ -46,10 +46,13 @@ public class FFmpegCmd
 
     public static void onProgress(float progress)
     {
+        Log.v("------------FFmpegCmd onProgress------------",Float.toString(progress));
         if (sOnCmdExecListener != null)
         {
+            Log.v("------------FFmpegCmd onProgress------------",Float.toString(progress));
             if (sDuration != 0)
             {
+                Log.v("------------FFmpegCmd onProgress------------",Long.toString(sDuration));
                 sOnCmdExecListener.onProgress(progress / (sDuration / 1000) * 0.95f);
             }
         }
