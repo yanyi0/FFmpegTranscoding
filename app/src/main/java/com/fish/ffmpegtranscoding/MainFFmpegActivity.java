@@ -23,12 +23,12 @@ public class MainFFmpegActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        Log.v("-------MainFFmpegActivity-------","onCreate");
         // Example of a call to a native method
         TextView tv = binding.sampleText;
         tv.setText(stringFromJNI());
         tv.setText(ffmpegInfo());
-        Log.v("------------",ffmpegInfo());
+        Log.v("------ffmpeg encoders------",ffmpegInfo());
     }
 
     /**
