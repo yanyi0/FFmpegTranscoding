@@ -290,33 +290,34 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         cmd.append("-c:a");
         cmd.append("aac");
         cmd.append("-c:v");
-        cmd.append("libx264");
+//        cmd.append("libx264");
+        cmd.append("h264_hlmediacodec");
         //分辨率
-        String resolution = String.format("scale=%dx%d",configTicket.getWidth(),configTicket.getHeight());
-        cmd.append("-vf");
-        cmd.append(resolution);
-        //帧率
-        cmd.append("-r");
-        cmd.append(Integer.toString(configTicket.getFps()));
-        //gop
-        cmd.append("-g");
-        String gop = String.format("%d",configTicket.getGop() * configTicket.getFps());
-        cmd.append(gop);
-        String bitrate = String.format("%dk",configTicket.getBitrate());
-        //码率控制
-        if(configTicket.getBitrateControl().equals("ABR")){
-            cmd.append("-b:v");
-            cmd.append(bitrate);
-        }
-        //码率控制
-        if (configTicket.getBitrateControl().equals("CBR")) {
-            cmd.append("-b:v");
-            cmd.append(bitrate);
-            cmd.append("-maxrate");
-            cmd.append(bitrate);
-            cmd.append("-minrate");
-            cmd.append(bitrate);
-        }
+//        String resolution = String.format("scale=%dx%d",configTicket.getWidth(),configTicket.getHeight());
+//        cmd.append("-vf");
+//        cmd.append(resolution);
+//        //帧率
+//        cmd.append("-r");
+//        cmd.append(Integer.toString(configTicket.getFps()));
+//        //gop
+//        cmd.append("-g");
+//        String gop = String.format("%d",configTicket.getGop() * configTicket.getFps());
+//        cmd.append(gop);
+//        String bitrate = String.format("%dk",configTicket.getBitrate());
+//        //码率控制
+//        if(configTicket.getBitrateControl().equals("ABR")){
+//            cmd.append("-b:v");
+//            cmd.append(bitrate);
+//        }
+//        //码率控制
+//        if (configTicket.getBitrateControl().equals("CBR")) {
+//            cmd.append("-b:v");
+//            cmd.append(bitrate);
+//            cmd.append("-maxrate");
+//            cmd.append(bitrate);
+//            cmd.append("-minrate");
+//            cmd.append(bitrate);
+//        }
         cmd.append(configTicket.getVideoCachePath());
         cmd.append("-y");
         //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
