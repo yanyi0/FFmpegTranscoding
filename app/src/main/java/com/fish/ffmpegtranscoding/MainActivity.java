@@ -291,7 +291,8 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         cmd.append("aac");
         cmd.append("-c:v");
 //        cmd.append("libx264");
-        cmd.append("h264_hlmediacodec");
+//        cmd.append("h264_hlmediacodec");
+        cmd.append("hevc_hlmediacodec");
         //分辨率
 //        String resolution = String.format("scale=%dx%d",configTicket.getWidth(),configTicket.getHeight());
 //        cmd.append("-vf");
