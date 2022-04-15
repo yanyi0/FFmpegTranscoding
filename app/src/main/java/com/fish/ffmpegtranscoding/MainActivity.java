@@ -29,6 +29,8 @@ import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 import android.util.Log;
 import android.os.Environment;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.fish.ffmpegtranscoding.callback.RecordProgressCallback;
 import com.fish.ffmpegtranscoding.entry.ConfigTicket;
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
     // 设备根目录路径
     private String path = Environment.getExternalStorageDirectory().getAbsolutePath();
     private RecordProgressCallback mProgressCallback;
+    private long startTime;
+    private long endTime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         });
 
     }
-
     public void clickSelectVideoSrc(View view){
         selectVideoSource();
     }
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         AlertDialog alert = builder.setTitle(title)
                 .setItems(showTasks,null)
                 .setPositiveButton("开始", (dialog, which) -> {
+                    startTime = System.currentTimeMillis()/1000;
                     Log.i("MainActivity","------------showTaskListDialog---------: "+tickets.get(0).getTicketID());
                     // 开始第一个任务 传ConfigTicket对象
 //                    ZegoUtils.getInstance().startTranscoding(tickets.get(0));
@@ -157,7 +161,6 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
     public void clickVideoBitrateAdd(View view){
         //-------todo delete use test
 //        test_ffmpeg_commandline();
-
         String bitrate = mEtVideoBitrate.getText().toString().trim();
         if(TextUtils.isEmpty(bitrate)){
             Toast.makeText(this, "请输入码率", Toast.LENGTH_SHORT).show();
@@ -369,6 +372,11 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        endTime = System.currentTimeMillis()/1000;
+                        Intent intent = new Intent(MainActivity.this,ResultActivity.class);
+                        intent.putExtra("transcodeTime", String.valueOf(endTime - startTime));
+                        startActivity(intent);
+
                         TextView tvCurrTask = findViewById(R.id.tv_curr_task);
                         tvCurrTask.setText("所有任务已完成，录制的视频在SD卡的Download目录下");
                         ProgressBar progressBar = findViewById(R.id.progressBar);
