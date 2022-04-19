@@ -63,7 +63,7 @@
 #include "libavutil/time.h"
 #include "libavutil/thread.h"
 #include "libavutil/threadmessage.h"
-//#include "libavcodec/mathops.h"
+#include "libavcodec/mathops.h"
 #include "libavformat/os_support.h"
 
 # include "libavfilter/avfilter.h"
@@ -1095,9 +1095,9 @@ static void do_video_out(OutputFile *of,
 
     if (!next_picture) {
         //end, flushing
-//        nb0_frames = nb_frames = mid_pred(ost->last_nb0_frames[0],
-//                                          ost->last_nb0_frames[1],
-//                                          ost->last_nb0_frames[2]);
+        nb0_frames = nb_frames = mid_pred(ost->last_nb0_frames[0],
+                                          ost->last_nb0_frames[1],
+                                          ost->last_nb0_frames[2]);
     } else {
         delta0 = sync_ipts - ost->sync_opts; // delta0 is the "drift" between the input frame (next_picture) and where it would fall in the output.
         delta  = delta0 + duration;
@@ -1200,7 +1200,8 @@ static void do_video_out(OutputFile *of,
         }
     }
     ost->last_dropped = nb_frames == nb0_frames && next_picture;
-
+    //TODO
+    nb_frames = 1;
     /* duplicates frame if needed */
     for (i = 0; i < nb_frames; i++) {
         AVFrame *in_picture;

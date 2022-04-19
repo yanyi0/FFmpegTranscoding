@@ -328,6 +328,8 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         }
         cmd.append(configTicket.getVideoCachePath());
         cmd.append("-y");
+//        cmd.append("-vf");
+//        cmd.append("mpdecimate,setpts=N/FRAME_RATE/TB");
         //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
         Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
         FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
