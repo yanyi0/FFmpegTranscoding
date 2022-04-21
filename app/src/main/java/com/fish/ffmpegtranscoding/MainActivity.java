@@ -313,12 +313,12 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
         cmd.append(gop);
         String bitrate = String.format("%dk",configTicket.getBitrate());
         //码率控制
-        if(configTicket.getBitrateControl().equals("ABR")){
+        if(configTicket.getBitrateControl().equals("abr")){
             cmd.append("-b:v");
             cmd.append(bitrate);
         }
         //码率控制
-        if (configTicket.getBitrateControl().equals("CBR")) {
+        if (configTicket.getBitrateControl().equals("cbr")) {
             cmd.append("-b:v");
             cmd.append(bitrate);
             cmd.append("-maxrate");
@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements RecordProgressCal
 //        cmd.append("-vf");
 //        cmd.append("mpdecimate,setpts=N/FRAME_RATE/TB");
         //ffmpeg -i " + path + "/video.mp4 -vframes 100 -y -f gif -s 480×320 " + path + "/video_100.gif";
-        Log.v("--------------final ffmpeg commandline ---------------",cmd.toString());
+        Log.v("--------------final-ffmpeg-commandline---------------",cmd.toString());
         FFmpegUtil.execCmd(cmd, duration, new OnVideoProcessListener() {
             @Override
             public void onProcessStart() {
