@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 #list(APPEND SRC ${SRC_FFMPEG})
 
 # 1. 定义so库和头文件所在目录，方面后面使用 设置ffmpeg库所在路径的目录
-#CMAKE_SOURCE_DIR=/Users/zego/Documents/FFmpeg/AndroidExamples/FFmpegTranscoding/app/src/main/cpp/
+#CMAKE_SOURCE_DIR=/Users/ego/Documents/FFmpeg/AndroidExamples/FFmpegTranscoding/app/src/main/cpp/
 set(distribution_DIR ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI})
 set(ffmpeg_head_dir ${CMAKE_SOURCE_DIR})
 # 2. 添加头文件目录
