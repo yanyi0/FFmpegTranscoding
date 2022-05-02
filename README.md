@@ -1,7 +1,7 @@
 # FFmpegTranscoding
 >[音视频文章汇总](https://www.jianshu.com/p/167b605add32)
 
-##接到需求，做一个iOS和Android两端的编码测试工具，可选编码器，分辨率，帧率，码率控制ABR或CBR，GOP进行转码,查看软边和硬编的编码效率和画质，具体如下:
+##接到需求，做一个iOS和Android两端的编码测试工具，可选编码器，分辨率，帧率，码率控制ABR或CBR，GOP进行转码,查看软编码libx264和硬编码MediaCodec的编码效率和画质以及是否少帧，具体如下:
 ![0](https://raw.githubusercontent.com/yanyi0/MWeb-Images/master/20220501163338.jpg)
 ![1.gif](https://upload-images.jianshu.io/upload_images/4193251-60f1c53402815759.gif?imageMogr2/auto-orient/strip)
 
